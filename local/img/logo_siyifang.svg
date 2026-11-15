@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 15 225 155" width="100%" height="100%">
+  <defs>
+    <linearGradient id="slabLeftGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d85816"/>
+      <stop offset="100%" stop-color="#e66e22"/>
+    </linearGradient>
+    <linearGradient id="slabRightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffaa00"/>
+      <stop offset="100%" stop-color="#f39800"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Slab 0 (Top) -->
+  <polygon points="173.5,23.5 29,76 29,88.5 173.5,46" fill="url(#slabLeftGrad)"/>
+  <polygon points="173.5,23.5 173.5,46 237,76 237,61" fill="url(#slabRightGrad)"/>
+
+  <!-- Slab 1 -->
+  <polygon points="173.5,64.5 29,103.5 29,116 173.5,88" fill="url(#slabLeftGrad)"/>
+  <polygon points="173.5,64.5 173.5,88 237,108.5 237,93" fill="url(#slabRightGrad)"/>
+
+  <!-- Slab 2 -->
+  <polygon points="173.5,103 29,129.5 29,141.5 173.5,126" fill="url(#slabLeftGrad)"/>
+  <polygon points="173.5,103 173.5,126 237,137.5 237,122" fill="url(#slabRightGrad)"/>
+
+  <!-- Slab 3 (Bottom) -->
+  <polygon points="173.5,140 29,152 29,164 173.5,164" fill="url(#slabLeftGrad)"/>
+  <polygon points="173.5,140 173.5,164 237,164 237,147" fill="url(#slabRightGrad)"/>
+</svg>

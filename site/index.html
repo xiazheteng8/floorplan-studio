@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>瞎折腾吧户型绘制工具</title>
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+  <link rel="apple-touch-icon" href="img/favicon.svg">
+  <meta name="theme-color" content="#0284c7">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" href="css/style.css?v=20261110_v6">
+</head>
+<body>
+  <div id="app-root" class="d-flex flex-column position-relative w-100 h-100">
+    <!-- ==========================================
+         TOP MENU BAR (#menu) - 1:1 官方复刻
+         ========================================== -->
+    <div id="menu" class="d-flex align-items-center justify-content-between">
+      <!-- Left: Logo, Title & Project Info Trigger -->
+      <div class="menu-title d-flex align-items-center">
+        <div class="menu-logo-wrap" id="btnLogoHome" title="瞎折腾吧户型绘制工具">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <div class="menu-title-text">
+          <div class="d-flex align-items-center gap-2">
+            <span class="floorplan-title" id="projectTitle" contenteditable="true" title="点击编辑户型名称" data-i18n="default_project_title">雅居乐花园·3室2厅1厨2卫 128㎡</span>
+            <button class="btn-edit-title" id="btnEditProjectInfo" title="编辑户型/小区全部参数">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            </button>
+          </div>
+          <!-- 快捷操作栏：新建户型 | 调整当前户型 | 比例尺 -->
+          <div class="floorplan-sub-bar d-flex align-items-center gap-2 mt-1">
+            <button class="btn-top-action" id="btnNewFloorplanTrigger" title="新建空白户型图">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+              <span data-i18n="btn_new_floorplan">新建户型</span>
+            </button>
+            <button class="btn-top-action" id="btnAdjustCurrentLayout" title="调整当前户型（小区名称、室厅厨卫、建筑面积）">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <span data-i18n="btn_adjust_layout">调整当前户型</span>
+            </button>
+            <button class="btn-top-action" id="btnToggleRuler" title="显示/隐藏画布坐标轴与标尺刻度">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="5" width="18" height="14" rx="2"></rect><line x1="3" y1="9" x2="7" y2="9"></line><line x1="3" y1="13" x2="5" y2="13"></line><line x1="7" y1="19" x2="7" y2="15"></line><line x1="11" y1="19" x2="11" y2="17"></line><line x1="15" y1="19" x2="15" y2="15"></line></svg>
+              <span data-i18n="btn_ruler">比例尺</span>
+            </button>
+            <!-- 隐藏的兼容容器 -->
+            <span id="textCommunity" style="display:none;">雅居乐花园</span>
+            <span id="textLayout" style="display:none;">3室2厅1厨2卫</span>
+            <span id="textTargetArea" style="display:none;">128</span>
+            <span id="badgeTargetArea" style="display:none;"></span>
+            <span id="badgeCommunity" style="display:none;"></span>
+            <span id="badgeLayout" style="display:none;"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: Action Tools (全新矢量风格图标体系) -->
+      <div class="menu-action d-flex align-items-center">
+        <!-- 选择 -->
+        <div class="menu-btn active" id="btnToolSelect" title="选择 (快捷键 E 或 V)">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
+          <span><span data-i18n="tool_select">选择</span> <kbd class="kbd-hint">E</kbd></span>
+        </div>
+        <!-- 移动户型图 -->
+        <div class="menu-btn" id="btnToolMove" title="移动户型图 (快捷键 M)">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 9 22 12 19 15"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
+          <span><span data-i18n="tool_move">移动</span> <kbd class="kbd-hint">M</kbd></span>
+        </div>
+        <!-- 旋转 -->
+        <div class="menu-btn position-relative" id="btnMenuRotate" title="旋转 (快捷键 < 或 >)">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-1.19"/></svg>
+          <span><span data-i18n="tool_rotate">旋转</span> <kbd class="kbd-hint">&lt; &gt;</kbd></span>
+          <!-- Floating Panel for Rotate -->
+          <div class="menu-floating-panel" id="panelRotate">
+            <div class="menu-floating-panel__tabs">
+              <button class="tab-item active" id="tabRotateFloorplan">户型图旋转</button>
+              <button class="tab-item" id="tabRotateBitmap">底图旋转</button>
+            </div>
+            <div class="menu-floating-panel__row">
+              <label class="menu-floating-panel__label">旋转角度:</label>
+              <input type="number" id="inputRotateDeg" class="menu-floating-panel__input" value="90" min="-360" max="360">
+              <span class="menu-floating-panel__unit">°</span>
+            </div>
+            <div class="menu-floating-panel__quick">
+              <button class="btn-quick" id="btnQuickRotMinus90">-90°</button>
+              <button class="btn-quick" id="btnQuickRot90">+90°</button>
+              <button class="btn-quick" id="btnQuickRot180">180°</button>
+            </div>
+            <button class="btn-panel-confirm" id="btnConfirmRotate">确定</button>
+          </div>
+        </div>
+        <!-- 缩放 -->
+        <div class="menu-btn position-relative" id="btnMenuScale" title="缩放 (快捷键 - 或 +)">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          <span><span data-i18n="tool_scale">缩放</span> <kbd class="kbd-hint">- +</kbd></span>
+          <!-- Floating Panel for Scale -->
+          <div class="menu-floating-panel" id="panelScale">
+            <div class="menu-floating-panel__row">
+              <label class="menu-floating-panel__label">面积倍率:</label>
+              <input type="number" id="inputScaleRatio" class="menu-floating-panel__input" value="1.0" step="0.1" min="0.1" max="10.0">
+            </div>
+            <p class="menu-floating-panel__hint">按面积等比缩放整个户型图</p>
+            <button class="btn-panel-confirm" id="btnConfirmScale">确定</button>
+          </div>
+        </div>
+        <!-- 水平翻转 -->
+        <div class="menu-btn" id="btnFlipH" title="水平翻转">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22" stroke-dasharray="2 2"></line><polyline points="6 8 2 12 6 16"></polyline><polyline points="18 8 22 12 18 16"></polyline></svg>
+          <span data-i18n="tool_flip_h">水平翻转</span>
+        </div>
+        <!-- 垂直翻转 -->
+        <div class="menu-btn" id="btnFlipV" title="垂直翻转">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="22" y2="12" stroke-dasharray="2 2"></line><polyline points="8 6 12 2 16 6"></polyline><polyline points="8 18 12 22 16 18"></polyline></svg>
+          <span data-i18n="tool_flip_v">垂直翻转</span>
+        </div>
+
+        <!-- 分割线 -->
+        <div class="menu-action-line"></div>
+
+        <!-- 撤销 -->
+        <div class="menu-btn" id="btnUndo" title="撤销一步操作 (Ctrl+Z)">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+          <span><span data-i18n="btn_undo">撤销</span> <kbd class="kbd-hint">Ctrl+Z</kbd></span>
+        </div>
+        <!-- 恢复 -->
+        <div class="menu-btn" id="btnRedo" title="恢复 (Ctrl+Y)">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path></svg>
+          <span data-i18n="btn_redo">恢复</span>
+        </div>
+        <!-- 保存 -->
+        <div class="menu-btn" id="btnSave" title="保存户型图 (Ctrl+S / 每10秒自动保存)">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          <span><span data-i18n="btn_save">保存</span> <kbd class="kbd-hint">Ctrl+S</kbd></span>
+          <span class="autosave-tag" id="autoSaveIndicator" title="系统已启用每10秒自动保存" data-i18n="btn_saved_tag">自动保存</span>
+        </div>
+        <!-- 清空 -->
+        <div class="menu-btn" id="btnClear" title="清空当前层户型">
+          <svg class="menu-svg-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span data-i18n="btn_clear">清空</span>
+        </div>
+      </div>
+
+      <!-- Right: Plan Info, Shortcuts, Generate, Download, Tour, Language, Auto Furnish -->
+      <!-- Visual order from right to left: 一键布置家具 -> 更改语言 -> 试用引导 -> 下载 -> 生成平面图 -> 快捷指南 -> 平面图信息 -->
+      <div class="menu-right d-flex align-items-center">
+        <!-- 平面图信息 -->
+        <div class="menu-btn" id="btnPlanInfo" title="平面图详细统计信息">
+          <svg class="menu-svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span data-i18n="btn_plan_info">平面图信息</span>
+        </div>
+        <!-- 绘制规则 / 快捷指南 -->
+        <div class="menu-btn" id="btnDrawRule" title="绘制规则与快捷键指南">
+          <svg class="menu-svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="6" y1="8" x2="6.01" y2="8"></line><line x1="10" y1="8" x2="10.01" y2="8"></line><line x1="14" y1="8" x2="14.01" y2="8"></line><line x1="18" y1="8" x2="18.01" y2="8"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          <span data-i18n="btn_draw_rule">快捷指南</span>
+        </div>
+        <!-- 生成平面图 -->
+        <div class="menu-btn" id="btnGenerate" title="生成平面图 (回车 Enter 确认)">
+          <svg class="menu-svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          <span data-i18n="btn_generate">生成平面图</span>
+        </div>
+        <!-- 下载 (打开 1:1 下载户型图弹窗) -->
+        <div class="menu-btn primary-download" id="btnDownload" title="快速导出 / 下载户型图 (Ctrl+S)">
+          <svg class="menu-svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span><span data-i18n="btn_download">下载</span> <kbd class="kbd-hint" style="background:rgba(255,255,255,0.25); color:white; border-color:transparent;">Ctrl+S</kbd></span>
+        </div>
+        <!-- 试用引导 -->
+        <div class="menu-btn" id="btnOpenTour" title="查看新手试用引导" style="color: #0284c7; font-weight: 600;">
+          <span style="font-size: 14px;">💡</span>
+          <span data-i18n="btn_tour">试用引导</span>
+        </div>
+        <!-- 更改语言 / 多国语言切换 (#btnLangDropdown) -->
+        <div class="menu-btn lang-dropdown-btn position-relative" id="btnLangDropdown" title="多国语言 / Language">
+          <svg class="menu-svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span id="currentLangLabel">简体中文</span>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+
+          <!-- 语言选择浮动面板 -->
+          <div class="lang-dropdown-panel" id="panelLangDropdown">
+            <div class="lang-item active" data-lang="zh-CN">
+              <span class="lang-flag">🇨🇳</span>
+              <span class="lang-name">简体中文</span>
+              <span class="lang-check">✓</span>
+            </div>
+            <div class="lang-item" data-lang="zh-TW">
+              <span class="lang-flag">🇭🇰</span>
+              <span class="lang-name">繁體中文</span>
+              <span class="lang-check">✓</span>
+            </div>
+            <div class="lang-item" data-lang="en">
+              <span class="lang-flag">🇺🇸</span>
+              <span class="lang-name">English</span>
+              <span class="lang-check">✓</span>
+            </div>
+            <div class="lang-item" data-lang="ja">
+              <span class="lang-flag">🇯🇵</span>
+              <span class="lang-name">日本語</span>
+              <span class="lang-check">✓</span>
+            </div>
+          </div>
+        </div>
+        <!-- 一键布置家具 (最右侧) -->
+        <div class="menu-btn primary-furnish" id="btnAutoFurnishAll" title="智能分析所有房间，一键贴墙合理放置成套家具">
+          <svg class="menu-svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 19v2M18 19v2M4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6zM3 13h18"/></svg>
+          <span data-i18n="btn_auto_furnish">一键布置家具</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MAIN CONTENT (#app-content)
+         ========================================== -->
+    <div id="app-content" class="d-flex flex-fill overflow-hidden">
+      <!-- Left Sidebar (app-sidebar--layout-2) -->
+      <div class="app-sidebar app-sidebar--layout-2 d-flex">
+        <!-- Tab Strip Header -->
+        <div class="app-sidebar-tab-header d-flex flex-column align-items-center">
+          <button class="app-sidebar-tab-item app-sidebar-tab-item--active" data-tab="draw" title="画户型">
+            <span class="app-sidebar-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            </span>
+            <span class="app-sidebar-tab-label" data-i18n="tab_draw">画户型</span>
+          </button>
+          <button class="app-sidebar-tab-item" data-tab="furnish" title="家具分类">
+            <span class="app-sidebar-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6zM3 13h18M6 19v2M18 19v2"/></svg>
+            </span>
+            <span class="app-sidebar-tab-label" data-i18n="tab_furnish">家具分类</span>
+          </button>
+          <button class="app-sidebar-tab-item" data-tab="library" title="户型图临摹">
+            <span class="app-sidebar-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            </span>
+            <span class="app-sidebar-tab-label" data-i18n="tab_library">户型临摹</span>
+          </button>
+
+          <!-- Bottom Social Links in Sidebar Strip -->
+          <div class="sidebar-tab-social mt-auto pb-2 d-flex flex-column align-items-center gap-2">
+            <a href="https://www.youtube.com/@xiazheteng8" target="_blank" rel="noopener noreferrer" class="sidebar-social-icon" title="YouTube: @xiazheteng8">
+              <svg viewBox="0 0 28 20" width="20" height="15" fill="none">
+                <rect width="28" height="20" rx="4.5" fill="#FF0000"/>
+                <polygon points="11,5 19,10 11,15" fill="#FFFFFF"/>
+              </svg>
+            </a>
+            <a href="https://t.me/xiazheteng8" target="_blank" rel="noopener noreferrer" class="sidebar-social-icon" title="Telegram: @xiazheteng8">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                <circle cx="12" cy="12" r="12" fill="#229ED9"/>
+                <path fill="#ffffff" d="m5.424 11.758 12.33-4.757c.571-.207 1.07.142.885.996l-2.098 9.892c-.158.71-.58.887-1.176.554l-3.238-2.387-1.562 1.503c-.173.173-.318.318-.65.318l.233-3.303 6.012-5.433c.262-.232-.057-.361-.406-.128L8.33 13.91l-3.203-1c-.696-.217-.71-.696.147-.996z"/>
+              </svg>
+            </a>
+            <a href="https://github.com/xiazheteng8" target="_blank" rel="noopener noreferrer" class="sidebar-social-icon" title="GitHub: @xiazheteng8">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="#334155">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Tab Body Card -->
+        <div class="app-sidebar-tab-body scrollbar">
+          <!-- 1. 画户型面板 -->
+          <div class="sidebar-panel-view active" id="sidebarPanelDraw">
+            <!-- 绘制工具 -->
+            <div class="draw-group-section">
+              <div class="draw-group-title" data-i18n="sec_draw_tools">绘制工具</div>
+              <div class="draw-items-grid">
+                <div class="draw-item" data-action="draw_wall" title="画直线墙 (快捷键 Q)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="11" width="26" height="10" rx="3" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/><circle cx="5" cy="16" r="3" fill="#2563eb"/><circle cx="27" cy="16" r="3" fill="#2563eb"/></svg>
+                  <span><span data-i18n="item_draw_wall">画直线墙</span> <kbd class="kbd-hint">Q</kbd></span>
+                </div>
+                <div class="draw-item" data-action="draw_rect" title="矩形建房 (快捷键 W)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="4" y="6" width="24" height="20" rx="3" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/><circle cx="5" cy="7" r="2.5" fill="#2563eb"/><circle cx="27" cy="7" r="2.5" fill="#2563eb"/><circle cx="27" cy="25" r="2.5" fill="#2563eb"/><circle cx="5" cy="25" r="2.5" fill="#2563eb"/></svg>
+                  <span><span data-i18n="item_draw_rect">矩形建房</span> <kbd class="kbd-hint">W</kbd></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 墙体类型 (FMt) -->
+            <div class="draw-group-section">
+              <div class="draw-group-title" data-i18n="sec_wall_types">墙体类型与厚度</div>
+              <div class="wall-type-list">
+                <div class="wall-type-item active" data-wtype="bearing">
+                  <span class="wall-color-box bearing"></span>
+                  <span data-i18n="wall_bearing">承重墙 (240mm)</span>
+                </div>
+                <div class="wall-type-item" data-wtype="normal">
+                  <span class="wall-color-box common"></span>
+                  <span data-i18n="wall_normal">普通墙 (120mm)</span>
+                </div>
+                <div class="wall-type-item" data-wtype="low">
+                  <span class="wall-color-box short"></span>
+                  <span data-i18n="wall_low">矮墙 (100mm)</span>
+                </div>
+                <div class="wall-type-item" data-wtype="virtual">
+                  <span class="wall-color-box virtual"></span>
+                  <span data-i18n="wall_virtual">虚拟墙 (虚线软分割)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 门窗构件 (DTt) -->
+            <div class="draw-group-section">
+              <div class="draw-group-title" data-i18n="sec_openings">门窗 (可拖拽至墙体放置)</div>
+              <div class="draw-items-grid">
+                <div class="draw-item" data-opening="single_door" draggable="true" title="单开门 (快捷键 A，可拖拽至墙体放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="27" width="26" height="3" fill="#cbd5e1"/><line x1="6" y1="27" x2="6" y2="7" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/><path d="M6 7A20 20 0 0 1 26 27" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="3 3"/></svg>
+                  <span><span data-i18n="op_single_door">单开门</span> <kbd class="kbd-hint">A</kbd></span>
+                </div>
+                <div class="draw-item" data-opening="double_door" draggable="true" title="双开门 (快捷键 S，可拖拽至墙体放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="27" width="26" height="3" fill="#cbd5e1"/><line x1="6" y1="27" x2="6" y2="12" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="27" x2="26" y2="12" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/><path d="M6 12A15 15 0 0 1 16 27" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="2.5 2.5"/><path d="M26 12A15 15 0 0 0 16 27" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="2.5 2.5"/></svg>
+                  <span><span data-i18n="op_double_door">双开门</span> <kbd class="kbd-hint">S</kbd></span>
+                </div>
+                <div class="draw-item" data-opening="sliding_door" draggable="true" title="推拉门 (快捷键 D，可拖拽至墙体放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="11" width="26" height="10" rx="2" fill="#eff6ff" stroke="#cbd5e1" stroke-width="1.5"/><rect x="5" y="13" width="12" height="6" rx="1.5" fill="#2563eb"/><rect x="15" y="13" width="12" height="6" rx="1.5" fill="#93c5fd"/><polyline points="9 16 13 16 11 14 11 18" stroke="#ffffff" stroke-width="1.2"/></svg>
+                  <span><span data-i18n="op_sliding_door">推拉门</span> <kbd class="kbd-hint">D</kbd></span>
+                </div>
+                <div class="draw-item" data-opening="entry_door" draggable="true" title="入户门 (主入口，带人行动线标志)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="27" width="26" height="3" fill="#cbd5e1"/><line x1="6" y1="27" x2="6" y2="7" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/><path d="M6 7A20 20 0 0 1 26 27" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="3 3"/><circle cx="21" cy="9" r="2.5" fill="#2563eb"/><path d="M21 12V18M21 18L18 24M21 18L24 23M21 14L18 17M21 14L24 16" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  <span><span data-i18n="op_entry_door">入户门</span></span>
+                </div>
+                <div class="draw-item" data-opening="window" draggable="true" title="窗户 (快捷键 F，可拖拽至墙体放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="4" y="9" width="24" height="14" rx="2" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/><line x1="16" y1="9" x2="16" y2="23" stroke="#0284c7" stroke-width="1.5"/><line x1="4" y1="16" x2="28" y2="16" stroke="#0284c7" stroke-width="1.5"/></svg>
+                  <span><span data-i18n="op_window">平开窗</span> <kbd class="kbd-hint">F</kbd></span>
+                </div>
+                <div class="draw-item" data-opening="bay_window" draggable="true" title="拖拽至墙体放置飘窗">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><polygon points="6,25 26,25 29,11 3,11" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/><line x1="6" y1="25" x2="3" y2="11" stroke="#0284c7" stroke-width="1.5"/><line x1="26" y1="25" x2="29" y2="11" stroke="#0284c7" stroke-width="1.5"/></svg>
+                  <span data-i18n="op_bay_window">建筑飘窗</span>
+                </div>
+                <div class="draw-item" data-opening="french_window" draggable="true" title="拖拽至墙体放置落地窗">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="6" width="26" height="20" rx="2" fill="#eff6ff" stroke="#0369a1" stroke-width="2"/><line x1="16" y1="6" x2="16" y2="26" stroke="#0369a1" stroke-width="1.5"/><line x1="3" y1="24" x2="29" y2="24" stroke="#0369a1" stroke-width="2"/></svg>
+                  <span data-i18n="op_french_window">落地窗</span>
+                </div>
+                <div class="draw-item" data-opening="opening" draggable="true" title="垭口 (快捷键 Z，可拖拽至墙体放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M5 26V15A11 11 0 0 1 27 15V26" fill="#f8fafc" stroke="#475569" stroke-width="2.2" stroke-linecap="round"/><circle cx="5" cy="26" r="2.5" fill="#475569"/><circle cx="27" cy="26" r="2.5" fill="#475569"/></svg>
+                  <span><span data-i18n="op_opening">垭口</span> <kbd class="kbd-hint">Z</kbd></span>
+                </div>
+                <div class="draw-item" data-opening="doorway" draggable="true" title="拖拽至墙体放置门洞">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="5" y="7" width="22" height="20" rx="1" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/><line x1="3" y1="27" x2="29" y2="27" stroke="#334155" stroke-width="2.5"/></svg>
+                  <span data-i18n="op_doorway">室内门洞</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 结构构件 (RTt) -->
+            <div class="draw-group-section">
+              <div class="draw-group-title" data-i18n="sec_components">构件</div>
+              <div class="draw-items-grid">
+                <div class="draw-item" data-component="pillar" title="柱子 (点击后在画布中放置，或拖拽放置)">
+                  <img src="img/Pillar.png" alt="柱子">
+                  <span data-i18n="comp_pillar">柱子</span>
+                </div>
+                <div class="draw-item" data-component="stairs_straight" title="直跑楼梯 (点击后在画布中放置，或拖拽放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="10" y="3" width="12" height="26" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/><path d="M10 8H22M10 12H22M10 16H22M10 20H22M10 24H22" stroke="#334155" stroke-width="1.1"/><path d="M16 27V6" stroke="#0284c7" stroke-width="1.6"/><path d="M13 9L16 5L19 9Z" fill="#0284c7"/></svg>
+                  <span data-i18n="comp_stairs_straight">直跑楼梯</span>
+                </div>
+                <div class="draw-item" data-component="stairs_l" title="L型转角楼梯 (点击后在画布中放置，或拖拽放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M4 29V4H29V14H14V29Z" fill="#f8fafc" stroke="#334155" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 14H14V4M4 19H14M4 24H14M19 4V14M24 4V14" stroke="#334155" stroke-width="1.1"/><path d="M9 27V9H26" stroke="#0284c7" stroke-width="1.6"/><path d="M25 6L29 9L25 12Z" fill="#0284c7"/></svg>
+                  <span data-i18n="comp_stairs_l">L型楼梯</span>
+                </div>
+                <div class="draw-item" data-component="stairs_u" title="U型双跑楼梯 (点击后在画布中放置，或拖拽放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="3" width="26" height="26" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/><path d="M3 11H29M3 16H14.5M3 21H14.5M3 25H14.5M17.5 16H29M17.5 21H29M17.5 25H29" stroke="#334155" stroke-width="1.1"/><rect x="14.5" y="11" width="3" height="18" fill="#e2e8f0" stroke="#334155" stroke-width="1"/><path d="M9 27V7H23V25" stroke="#0284c7" stroke-width="1.6"/><path d="M20 24L23 28L26 24Z" fill="#0284c7"/></svg>
+                  <span data-i18n="comp_stairs_u">U型楼梯</span>
+                </div>
+                <div class="draw-item" data-component="stairs_spiral" title="旋转楼梯 (点击后在画布中放置，或拖拽放置)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" fill="#f8fafc" stroke="#334155" stroke-width="1.8"/><path d="M16 3V29M3 16H29M6.8 6.8L25.2 25.2M25.2 6.8L6.8 25.2" stroke="#334155" stroke-width="1"/><circle cx="16" cy="16" r="2.6" fill="#64748b"/><path d="M14 24A8 8 0 1 1 23 19" stroke="#0284c7" stroke-width="1.6" fill="none"/><path d="M20.5 18L24 20.5L25 16.5Z" fill="#0284c7"/></svg>
+                  <span data-i18n="comp_stairs_spiral">旋转楼梯</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. 家具分类面板 -->
+          <div class="sidebar-panel-view" id="sidebarPanelFurnish">
+            <div class="furnish-nav-tabs">
+              <button class="furnish-cat-btn active" data-cat="all" data-i18n="cat_all">全部</button>
+              <button class="furnish-cat-btn" data-cat="living" data-i18n="cat_living">客厅</button>
+              <button class="furnish-cat-btn" data-cat="bedroom" data-i18n="cat_bedroom">卧室</button>
+              <button class="furnish-cat-btn" data-cat="dining" data-i18n="cat_dining">餐厅</button>
+              <button class="furnish-cat-btn" data-cat="kitchen" data-i18n="cat_kitchen">厨房</button>
+              <button class="furnish-cat-btn" data-cat="bathroom" data-i18n="cat_bathroom">卫浴</button>
+              <button class="furnish-cat-btn" data-cat="study" data-i18n="cat_study">书房</button>
+            </div>
+            <div class="furnish-items-container" id="furnishList"></div>
+          </div>
+
+          <!-- 3. 户型图临摹面板 -->
+          <div class="sidebar-panel-view" id="sidebarPanelLibrary">
+            <!-- 1. 上传本地户型图 -->
+            <div class="blueprint-section">
+              <div class="draw-group-title d-flex justify-content-between align-items-center">
+                <span data-i18n="bp_title_upload">1. 上传本地户型图</span>
+                <span class="bp-badge-tag" data-i18n="bp_tag_step1">第一步</span>
+              </div>
+              <div class="blueprint-drop-card" id="bpDropArea" onclick="document.getElementById('blueprintFileInput').click()">
+                <div class="bp-drop-icon">📁</div>
+                <div class="bp-drop-text" data-i18n="bp_upload_text">点击或将本地户型图拖拽到此处</div>
+                <div class="bp-drop-sub" data-i18n="bp_upload_sub">支持 JPG / PNG / CAD导图等格式</div>
+              </div>
+            </div>
+
+            <!-- 2. 比例尺标定 -->
+            <div class="blueprint-section">
+              <div class="draw-group-title d-flex justify-content-between align-items-center">
+                <span data-i18n="bp_title_scale">2. 比例尺标定</span>
+                <span class="bp-badge-tag" data-i18n="bp_tag_precision">1:1 精确</span>
+              </div>
+              <button class="bp-btn bp-btn-calibrate w-100" id="btnCalibrateScale">
+                <img src="img/Scale.svg" alt="标定" style="width: 16px; height: 16px;">
+                <span data-i18n="bp_calibrate">标定底图比例尺 (打两点输米数)</span>
+              </button>
+            </div>
+
+            <!-- 3. 底图调节与微调 -->
+            <div class="blueprint-section">
+              <div class="draw-group-title" data-i18n="bp_adjust_title">3. 底图调节与微调</div>
+              <div class="bp-ctrl-row">
+                <span><span data-i18n="bp_opacity">透明度:</span> <b id="bpOpacityText">50%</b></span>
+                <input type="range" id="bpOpacityRange" min="0" max="100" value="50">
+              </div>
+              <div class="bp-btn-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <button class="bp-btn-sm" id="btnRotateBp" data-i18n="bp_rotate_btn">旋转 90°</button>
+                <button class="bp-btn-sm" id="btnLockBp" data-i18n="bp_lock_btn">锁定底图</button>
+                <button class="bp-btn-sm" id="btnToggleBp" data-i18n="bp_hide_btn">隐藏底图</button>
+                <button class="bp-btn-sm" id="btnToggleFloorTransparency" title="临摹时切换地板显示模式（半透明/隐藏/正常）" data-i18n="bp_toggle_floor_btn">地板透视: 开</button>
+              </div>
+            </div>
+
+            <!-- 4. 临摹画墙工具 (最外墙默认 240mm 承重墙) -->
+            <div class="blueprint-section">
+              <div class="draw-group-title d-flex justify-content-between align-items-center">
+                <span data-i18n="bp_trace_wall_title">4. 临摹画墙 (最外墙默认 240mm 承重墙)</span>
+                <span class="bp-badge-tag" data-i18n="bp_trace_wall_tag">快捷画墙</span>
+              </div>
+              <div class="draw-items-grid mb-2">
+                <div class="draw-item active" id="btnTraceWallBearing" data-action="draw_wall" data-trace-wtype="bearing" data-trace-thick="240" title="临摹外墙 (240mm 承重墙，快捷键 Q)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="10" width="26" height="12" rx="3" fill="#1e293b" stroke="#0f172a" stroke-width="2"/><circle cx="5" cy="16" r="3" fill="#2563eb"/><circle cx="27" cy="16" r="3" fill="#2563eb"/></svg>
+                  <span><span data-i18n="item_trace_outer_wall">临摹外墙 (240mm)</span> <kbd class="kbd-hint">Q</kbd></span>
+                </div>
+                <div class="draw-item" id="btnTraceWallNormal" data-action="draw_wall" data-trace-wtype="normal" data-trace-thick="120" title="临摹内隔墙 (120mm 普通墙)">
+                  <svg class="draw-item-icon" width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="3" y="13" width="26" height="6" rx="2" fill="#94a3b8" stroke="#475569" stroke-width="1.5"/><circle cx="5" cy="16" r="2.5" fill="#2563eb"/><circle cx="27" cy="16" r="2.5" fill="#2563eb"/></svg>
+                  <span><span data-i18n="item_trace_inner_wall">临摹隔墙 (120mm)</span></span>
+                </div>
+              </div>
+              <div class="wall-type-list">
+                <div class="wall-type-item active" data-wtype="bearing">
+                  <span class="wall-color-box bearing"></span>
+                  <span data-i18n="wall_outer_bearing">外墙·承重墙 (240mm)</span>
+                </div>
+                <div class="wall-type-item" data-wtype="normal">
+                  <span class="wall-color-box common"></span>
+                  <span data-i18n="wall_inner_normal">内墙·隔墙 (120mm)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Canvas Area (app-canvas-area) -->
+      <div class="app-canvas-area flex-fill h-100 overflow-hidden position-relative">
+        <canvas id="mainCanvas"></canvas>
+
+        <!-- Top-Left Floating Storey Widget (app-canvas-float-widgets) -->
+        <div class="app-canvas-float-widgets position-absolute">
+          <div class="d-flex align-items-center gap-2">
+            <!-- 楼层切换胶囊 -->
+            <div class="app-storey d-flex align-items-center" id="storeyWidget" title="点击展开楼层管理面板">
+              <span class="storey-icon">🏢</span>
+              <span class="storey-label" id="currentStoreyLabel">1F</span>
+              <svg class="storey-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <!-- 快捷复制户型图按钮 -->
+            <button class="btn-float-copy-floor" id="btnQuickCopyFloor" title="复制当前户型图到指定楼层">
+              <span class="btn-copy-icon">📋</span>
+              <span class="btn-copy-text" data-i18n="btn_quick_copy_floor">复制户型图到指定楼层</span>
+            </button>
+          </div>
+
+          <!-- Storey Management Dropdown Panel -->
+          <div class="storey-dropdown-panel" id="panelStoreyManager" style="display: none;">
+            <div class="storey-dropdown-header d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-1">
+                <span data-i18n="storey_widget_title">🏢 楼层管理</span>
+                <span class="badge-cur-floor" id="badgeCurrentStorey">当前: 1F</span>
+              </div>
+              <span class="storey-count" id="storeyCountText">共 1 层</span>
+            </div>
+
+            <!-- 楼层列表 -->
+            <div class="storey-list" id="storeyListContainer">
+              <!-- Dynamically generated floor items -->
+            </div>
+
+            <!-- 向上 / 向下快捷添加楼层 (不包含 0 楼层) -->
+            <div class="storey-add-section">
+              <div class="storey-section-label" data-i18n="storey_add_title">添加新楼层 (不含0层)</div>
+              <div class="storey-add-btn-group d-flex gap-2">
+                <button class="storey-add-btn flex-fill" id="btnAddFloorUp" title="向上添加上一层（当前楼层+1）">
+                  <span id="textAddFloorUp">🔼 向上添加 (2F)</span>
+                </button>
+                <button class="storey-add-btn flex-fill" id="btnAddFloorDown" title="向下添加下一层（当前楼层-1）">
+                  <span id="textAddFloorDown">🔽 向下添加 (-1F)</span>
+                </button>
+              </div>
+              <label class="storey-copy-checkbox d-flex align-items-center gap-1 mt-1">
+                <input type="checkbox" id="chkAutoCopyStructure" checked>
+                <span data-i18n="storey_copy_struct">同时带入当前层户型结构（墙体/房间）</span>
+              </label>
+            </div>
+
+            <!-- 复制户型图到指定楼层操作入口 -->
+            <div class="storey-action-divider"></div>
+            <button class="storey-btn-copy-target w-100" id="btnCopyFloorToTarget">
+              <span data-i18n="storey_copy_btn">📋 复制户型图到指定楼层...</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Top-Right Floating Compass Dial (app-property) - 极简CAD建筑指北针，参考图标准风格 -->
+        <div class="app-property-compass position-absolute">
+          <div class="compass-dial" id="compassDial" title="指北针 (拖拽旋转方位，点击复位北向0°)">
+            <svg class="compass-svg" viewBox="0 0 48 58" width="46" height="56">
+              <!-- 北向字母N 位于圆环上方，绝对不与指针重叠 -->
+              <text x="24" y="9.5" text-anchor="middle" fill="#0f172a" font-size="9" font-weight="700" font-family="-apple-system, sans-serif">N</text>
+              <!-- 建筑标准外圆环 -->
+              <circle cx="24" cy="34" r="20" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+              <!-- 旋转指针组 (围绕圆心 24, 34 旋转) -->
+              <g id="compassNeedleGroup" transform="rotate(0 24 34)">
+                <!-- 北向实心黑左半箭头 -->
+                <polygon points="24,16 17.5,34 24,30" fill="#0f172a" />
+                <!-- 北向镂空/白底右半箭头 -->
+                <polygon points="24,16 30.5,34 24,30" fill="#ffffff" stroke="#0f172a" stroke-width="1.2" />
+                <!-- 中心基准点 -->
+                <circle cx="24" cy="34" r="2.8" fill="#0f172a" />
+              </g>
+            </svg>
+            <div class="compass-angle-badge" id="compassAngleBadge" style="display:none;">0°</div>
+          </div>
+        </div>
+
+        <!-- Canvas Center Empty State (无任务/户型名称时居中展示) -->
+        <div class="canvas-empty-state position-absolute" id="canvasEmptyState" style="display: none;">
+          <div class="empty-state-card text-center">
+            <div class="empty-icon-wrap">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.8">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </div>
+            <h4 class="empty-title">尚未创建户型图</h4>
+            <p class="empty-desc">填写小区名称与户型格局，绘制时参考相对比例，绘制完成后支持一键按目标面积等比缩放</p>
+            <div class="d-flex justify-content-center gap-3">
+              <button class="btn btn-primary empty-create-btn" id="btnEmptyCreate">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>创建户型图</span>
+              </button>
+              <button class="btn btn-outline-secondary empty-load-btn" id="btnEmptyLoadDemo">
+                <span>载入示例户型</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom-Right Floating Tools (app-canvas-bottom-tools) -->
+        <div class="app-canvas-bottom-tools position-absolute d-flex align-items-center">
+          <!-- 智能检测 app-canvas-tool-check -->
+          <div class="bottom-tool-btn" id="toolCheck" title="智能检测">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+          </div>
+
+          <!-- 视口缩放 app-canvas-tool-viewport -->
+          <div class="app-canvas-tool-viewport d-flex align-items-center">
+            <button class="vp-btn" id="vpZoomOut" title="缩小 (快捷键 -)">-</button>
+            <span class="vp-zoom-text" id="vpZoomRatio">100%</span>
+            <button class="vp-btn" id="vpZoomIn" title="放大 (快捷键 +)">+</button>
+            <button class="vp-btn vp-btn-reset d-flex align-items-center gap-1" id="vpFit" title="自适应居中 (快捷键 空格)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+              <kbd class="kbd-hint" style="margin:0; font-size:9px; padding:1px 3px;">空格</kbd>
+            </button>
+          </div>
+
+          <!-- 显隐设置 app-canvas-tool-visible -->
+          <div class="bottom-tool-btn position-relative" id="toolVisible" title="显隐设置">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <!-- Dropdown Checklist -->
+            <div class="visible-popover" id="popoverVisible">
+              <div class="popover-title">显示设置</div>
+              <label><input type="checkbox" id="chkDim" checked> 尺寸标注</label>
+              <label><input type="checkbox" id="chkRoom" checked> 功能间标记</label>
+              <label><input type="checkbox" id="chkGrid" checked> 网格线</label>
+              <label><input type="checkbox" id="chkFloor" checked> 地板设计</label>
+              <label><input type="checkbox" id="chkFurn" checked> 彩色家具</label>
+              <label><input type="checkbox" id="chkBp" checked> 参考底图</label>
+            </div>
+          </div>
+
+          <!-- 墙体美化 app-canvas-tool-beautify -->
+          <div class="bottom-tool-btn position-relative" id="toolBeautify" title="墙体美化">
+            <span class="beautify-icon">🧱</span>
+            <!-- Dropdown for beautify -->
+            <div class="beautify-popover" id="popoverBeautify">
+              <div class="popover-title">墙体美化参数</div>
+              <div class="popover-row">
+                <span>外墙厚度:</span>
+                <input type="number" id="beautifyOuter" value="240"> mm
+              </div>
+              <div class="popover-row">
+                <span>内墙厚度:</span>
+                <input type="number" id="beautifyInner" value="120"> mm
+              </div>
+              <button class="btn-beautify-apply" id="btnApplyBeautify">美化并对齐</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected Element Floating Property Card (app-property-card) -->
+        <div class="app-property-card" id="selectedPropCard" style="display: none;">
+          <div class="prop-card-header">
+            <span id="propCardTitle">构件属性</span>
+            <button class="prop-card-close" id="btnClosePropCard">&times;</button>
+          </div>
+          <div class="prop-card-body" id="propCardBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden File Input for Blueprint Upload -->
+  <input type="file" id="blueprintFileInput" accept="image/*" style="display: none;">
+
+  <!-- ==========================================
+       DOWNLOAD MODAL (先预览，然后下载和关闭)
+       ========================================== -->
+  <div class="modal-download" id="modalDownload" style="display: none;">
+    <div class="modal-backdrop-custom" onclick="app.closeDownloadModal()"></div>
+    <div class="custom-modal-dialog" style="width: 820px; max-width: 95vw; margin: auto;">
+      <div class="custom-modal-content" style="background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+        <!-- Header -->
+        <div class="modal-header d-flex justify-content-between align-items-center" style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+          <div class="d-flex align-items-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <h5 class="modal-title m-0" style="font-size: 17px; font-weight: 600; color:#0f172a;" data-i18n="modal_dl_title">户型图生成预览与导出</h5>
+          </div>
+          <button class="modal-close-btn" onclick="app.closeDownloadModal()" style="font-size: 20px;">&times;</button>
+        </div>
+
+        <!-- Body: Large Live Preview -->
+        <div class="modal-body" style="padding: 20px 24px;">
+          <!-- Controls Bar -->
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2" id="downloadStyleTabs">
+              <span style="font-size: 14px; font-weight: 600; color: #334155;" data-i18n="modal_dl_style">效果风格:</span>
+              <button class="unit-btn active" id="btnPreviewStyleColor" onclick="app.switchDownloadStyle('color')" style="padding: 6px 14px; font-size: 14px; border-radius: 6px;" data-i18n="modal_dl_style_color">🎨 彩色渲染图</button>
+              <button class="unit-btn" id="btnPreviewStyleCad" onclick="app.switchDownloadStyle('cad')" style="padding: 6px 14px; font-size: 14px; border-radius: 6px;" data-i18n="modal_dl_style_cad">📐 CAD黑白工程图</button>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span style="font-size: 14px; font-weight: 600; color: #334155;" data-i18n="modal_dl_format">格式:</span>
+              <select id="downloadFormatSelect" class="dl-select" style="padding: 6px 12px; font-size: 14px; border-radius: 6px;">
+                <option value="png" data-i18n="modal_dl_fmt_png">PNG 高清无损</option>
+                <option value="jpg" data-i18n="modal_dl_fmt_jpg">JPG 压缩图片</option>
+                <option value="svg" data-i18n="modal_dl_fmt_svg">SVG 矢量图</option>
+              </select>
+              <select id="downloadResSelect" class="dl-select" onchange="app.renderDownloadPreview()" style="padding: 6px 12px; font-size: 14px; border-radius: 6px;">
+                <option value="2560" data-i18n="modal_dl_res_2k" selected>2K 超清</option>
+                <option value="3840" data-i18n="modal_dl_res_4k">4K 印刷级</option>
+                <option value="1920" data-i18n="modal_dl_res_1080">1080P 标准</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Preview Frame -->
+          <div class="preview-stage-container" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; display: flex; align-items: center; justify-content: center; min-height: 400px; max-height: 540px; overflow: hidden;">
+            <canvas id="largePreviewCanvas" style="max-width: 100%; max-height: 490px; object-fit: contain; box-shadow: 0 4px 20px rgba(0,0,0,0.12); border-radius: 4px; background: #ffffff;"></canvas>
+          </div>
+        </div>
+
+        <!-- Footer: 下载 and 关闭 -->
+        <div class="modal-footer d-flex justify-content-end align-items-center gap-3" style="padding: 16px 24px; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+          <button class="unit-btn btn-secondary-clean" onclick="app.closeDownloadModal()" style="padding: 8px 24px; font-size: 15px; border-radius: 6px;" data-i18n="modal_close">关闭</button>
+          <button class="unit-btn unit-btn-download" onclick="app.executeCurrentDownload()" style="padding: 8px 28px; font-size: 15px; font-weight: 600; background: #0284c7; color: white; border-radius: 6px; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);" data-i18n="modal_dl_action">📥 下载户型图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Community & Floorplan Info Modal (填写小区信息弹窗) -->
+  <div class="modal-download" id="modalProjectInfo" style="display: none;">
+    <div class="modal-backdrop-custom" onclick="app.closeProjectInfoModal()"></div>
+    <div class="custom-modal-dialog" style="width: 580px; max-width: 95vw; margin: auto;">
+      <div class="custom-modal-content project-info-modal-content">
+        <div class="modal-header-custom d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="modal-icon-badge">🏡</span>
+            <h5 class="modal-title m-0" data-i18n="modal_project_info_title">填写小区与户型信息</h5>
+          </div>
+          <button class="modal-close-btn" onclick="app.closeProjectInfoModal()">✕</button>
+        </div>
+        <div class="modal-body-custom">
+          <p class="modal-tip-text" data-i18n="modal_project_info_tip">所有信息均为可选。系统将自动根据小区、室、厅、厨、卫与面积生成标准名称，绘制时以相对比例为准，最后可一键按总面积全局等比缩放。</p>
+          
+          <!-- 实时自动生成名称展示 -->
+          <div class="generated-name-box d-flex align-items-center justify-content-between">
+            <span class="gen-name-label" data-i18n="modal_auto_gen_name">自动生成名称:</span>
+            <span class="generated-name-preview" id="previewAutoName">雅居乐花园·3室2厅1厨2卫 128㎡</span>
+          </div>
+
+          <!-- 1. 小区名称 -->
+          <div class="info-form-group">
+            <label class="info-form-label" data-i18n="modal_community_label">小区 / 楼盘名称</label>
+            <input type="text" id="infoInputName" class="info-form-input" value="雅居乐花园" placeholder="如：雅居乐花园 (可选)" data-i18n-placeholder="modal_community_ph" oninput="app.updateAutoNamePreview()">
+          </div>
+
+          <!-- 2. 面积 -->
+          <div class="info-form-group">
+            <label class="info-form-label" data-i18n="modal_area_label">建筑总面积 (㎡)</label>
+            <div class="input-with-unit">
+              <input type="number" id="infoInputArea" class="info-form-input" value="128" placeholder="如：128" step="0.1" min="10" max="5000" oninput="app.updateAutoNamePreview()">
+              <span class="input-unit">㎡</span>
+            </div>
+          </div>
+
+          <!-- 3. 基础居室结构 (室、厅、厨、卫) -->
+          <div class="info-form-group">
+            <label class="info-form-label" data-i18n="modal_room_layout_label">户型格局 (室、厅、厨、卫)</label>
+            <div class="room-counters-grid">
+              <div class="counter-box">
+                <span class="counter-label" data-i18n="modal_label_bed">卧室 / 房间</span>
+                <div class="counter-controls">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomBed', -1)">-</button>
+                  <input type="number" id="infoRoomBed" class="counter-val" value="3" min="0" max="20" oninput="app.updateAutoNamePreview()">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomBed', 1)">+</button>
+                </div>
+              </div>
+              <div class="counter-box">
+                <span class="counter-label" data-i18n="modal_label_living">客厅</span>
+                <div class="counter-controls">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomLiving', -1)">-</button>
+                  <input type="number" id="infoRoomLiving" class="counter-val" value="1" min="0" max="10" oninput="app.updateAutoNamePreview()">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomLiving', 1)">+</button>
+                </div>
+              </div>
+              <div class="counter-box">
+                <span class="counter-label" data-i18n="modal_label_dining">餐厅</span>
+                <div class="counter-controls">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomDining', -1)">-</button>
+                  <input type="number" id="infoRoomDining" class="counter-val" value="1" min="0" max="10" oninput="app.updateAutoNamePreview()">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomDining', 1)">+</button>
+                </div>
+              </div>
+              <div class="counter-box">
+                <span class="counter-label" data-i18n="modal_label_kitchen">厨房</span>
+                <div class="counter-controls">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomKitchen', -1)">-</button>
+                  <input type="number" id="infoRoomKitchen" class="counter-val" value="1" min="0" max="10" oninput="app.updateAutoNamePreview()">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomKitchen', 1)">+</button>
+                </div>
+              </div>
+              <div class="counter-box">
+                <span class="counter-label" data-i18n="modal_label_bath">卫生间</span>
+                <div class="counter-controls">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomBath', -1)">-</button>
+                  <input type="number" id="infoRoomBath" class="counter-val" value="2" min="0" max="10" oninput="app.updateAutoNamePreview()">
+                  <button type="button" class="btn-counter" onclick="app.adjustCounter('infoRoomBath', 1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. 添加更多功能间 -->
+          <div class="info-form-group">
+            <label class="info-form-label d-flex justify-content-between">
+              <span data-i18n="modal_extra_rooms_label">添加更多功能间 (可选)</span>
+              <span class="sub-tip" data-i18n="modal_extra_rooms_tip">点击增选功能空间</span>
+            </label>
+            <div class="extra-tags-wrap" id="extraRoomTags">
+              <span class="extra-room-tag" data-type="study" data-name="书房" onclick="app.toggleExtraRoomTag(this, '书房')">+ <span data-i18n="room_study">书房</span></span>
+              <span class="extra-room-tag" data-type="balcony" data-name="景观阳台" onclick="app.toggleExtraRoomTag(this, '景观阳台')">+ <span data-i18n="room_balcony">景观阳台</span></span>
+              <span class="extra-room-tag" data-type="service_balcony" data-name="生活阳台" onclick="app.toggleExtraRoomTag(this, '生活阳台')">+ <span data-i18n="room_service_balcony">生活阳台</span></span>
+              <span class="extra-room-tag" data-type="entry" data-name="玄关" onclick="app.toggleExtraRoomTag(this, '玄关')">+ <span data-i18n="room_foyer">玄关</span></span>
+              <span class="extra-room-tag" data-type="cloakroom" data-name="衣帽间" onclick="app.toggleExtraRoomTag(this, '衣帽间')">+ <span data-i18n="room_closet">衣帽间</span></span>
+              <span class="extra-room-tag" data-type="storage" data-name="储藏室" onclick="app.toggleExtraRoomTag(this, '储藏室')">+ <span data-i18n="room_storage">储藏室</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer-custom d-flex justify-content-between align-items-center">
+          <button class="unit-btn btn-secondary-clean" onclick="app.closeProjectInfoModal()" data-i18n="modal_cancel">取消</button>
+          <div class="d-flex gap-2">
+            <button class="unit-btn btn-outline-clean" onclick="app.confirmProjectInfo(false)" data-i18n="modal_save_info">保存信息</button>
+            <button class="unit-btn unit-btn-download" onclick="app.confirmProjectInfo(true)" data-i18n="modal_confirm_apply">确认并应用</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scale Calibration Modal -->
+  <div class="modal-download" id="modalCalibrate" style="display: none;">
+    <div class="modal-backdrop-custom" onclick="app.cancelCalibration()"></div>
+    <div class="custom-modal-dialog" style="width: 440px; margin: auto;">
+      <div class="custom-modal-content" style="background:#fff; border-radius:8px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.25);">
+        <h5 style="font-size:16px; margin-bottom:12px; font-weight:600;">标定底图物理比例尺</h5>
+        <p style="font-size:13px; color:#606266; margin-bottom:14px; line-height:1.5;">
+          已选定点 <b>A</b> 和点 <b>B</b>。请输入该线段在真实世界的实际物理距离：
+        </p>
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <input type="number" id="calibrateDistInput" value="12000" min="100" max="100000" step="100" style="flex:1; padding:6px 10px; border:1px solid #e2e8f0; border-radius:4px; font-size:14px;">
+          <select id="calibrateUnitSelect" style="width:100px; padding:6px; border:1px solid #e2e8f0; border-radius:4px; font-size:14px;">
+            <option value="mm">毫米 (mm)</option>
+            <option value="m">米 (m)</option>
+          </select>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button class="unit-btn" onclick="app.cancelCalibration()">取消</button>
+          <button class="unit-btn unit-btn-download" onclick="app.confirmCalibration()">确认标定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copy Floor Modal (复制户型图到指定楼层弹窗) -->
+  <div class="modal-download" id="modalCopyFloorTo" style="display: none;">
+    <div class="modal-backdrop-custom" onclick="app.closeCopyFloorModal()"></div>
+    <div class="custom-modal-dialog" style="width: 480px; max-width: 95vw; margin: auto;">
+      <div class="custom-modal-content project-info-modal-content">
+        <div class="modal-header-custom d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="modal-icon-badge">📋</span>
+            <h5 class="modal-title m-0" data-i18n="modal_copy_floor_title">复制户型图到指定楼层</h5>
+          </div>
+          <button class="modal-close-btn" onclick="app.closeCopyFloorModal()">✕</button>
+        </div>
+        <div class="modal-body-custom">
+          <!-- 当前源楼层信息 -->
+          <div class="copy-floor-source-box">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="copy-source-label">来源楼层：</span>
+              <span class="copy-source-badge" id="copyModalSourceFloor">1F</span>
+            </div>
+            <div class="copy-source-desc mt-1" id="copyModalSourceDesc">
+              包含 0 段墙体，0 个房间
+            </div>
+          </div>
+
+          <!-- 目标楼层设置 -->
+          <div class="info-form-group mt-3">
+            <label class="info-form-label">复制到的目标楼层：</label>
+            <input type="text" id="copyModalTargetInput" class="info-form-input" value="2F" placeholder="如 2F、3F、-1F 等（不含0层）">
+          </div>
+
+          <!-- 快速目标楼层推荐标签 -->
+          <div class="quick-floor-tags-wrap mt-2">
+            <div class="quick-floor-title">快速选择目标楼层：</div>
+            <div class="quick-floor-tags d-flex flex-wrap gap-2 mt-1" id="copyModalQuickTags">
+              <!-- 动态生成快捷标签：向上+1、向下-1、其他已有楼层 -->
+            </div>
+          </div>
+
+          <!-- 提示与切换开关 -->
+          <div class="copy-modal-tip mt-3">
+            <span>💡 提示：若目标楼层已存在，将覆盖该楼层的墙体、门窗及房间；若目标楼层不存在，将自动创建该楼层。</span>
+          </div>
+          <label class="d-flex align-items-center gap-2 mt-2" style="font-size: 13px; color: #475569; cursor: pointer;">
+            <input type="checkbox" id="chkSwitchAfterCopy" checked>
+            <span>复制完成后立即切换到目标楼层</span>
+          </label>
+        </div>
+        <div class="modal-footer-custom d-flex justify-content-end align-items-center gap-2">
+          <button class="unit-btn btn-secondary-clean" onclick="app.closeCopyFloorModal()" data-i18n="modal_cancel">取消</button>
+          <button class="unit-btn unit-btn-download" onclick="app.confirmCopyFloor()" data-i18n="modal_confirm_copy_floor">确认复制户型图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Room Function & Name Picker Dual Window Modal (房间功能与名称双窗口选择弹窗) -->
+  <div class="modal-download" id="modalRoomNamePicker" style="display: none;">
+    <div class="modal-backdrop-custom" onclick="app.closeRoomNamePickerModal()"></div>
+    <div class="custom-modal-dialog" style="width: 580px; max-width: 95vw; margin: auto;">
+      <div class="custom-modal-content project-info-modal-content" style="border-radius: 12px; overflow: hidden;">
+        <div class="modal-header-custom d-flex justify-content-between align-items-center" style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+          <div class="d-flex align-items-center gap-2">
+            <span class="modal-icon-badge" style="font-size: 20px;">🏷️</span>
+            <div>
+              <h5 class="modal-title m-0" id="roomPickerTitle" data-i18n="modal_room_picker_title" style="font-size: 16px; font-weight: 700; color: #0f172a;">设置房间功能与名称</h5>
+              <div class="modal-subtitle-text" id="roomPickerSubtitle" style="font-size: 12.5px; color: #64748b; margin-top: 2px;">当前空间面积约 0.0 ㎡</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" onclick="app.closeRoomNamePickerModal()" style="font-size: 20px;">✕</button>
+        </div>
+
+        <!-- Top Action Bar: 左侧内置分类提示 + 右侧直接自定义输入 (无需点进二级页面) -->
+        <div class="room-picker-topbar d-flex justify-content-between align-items-center" style="padding: 12px 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; gap: 12px;">
+          <div class="d-flex align-items-center gap-2">
+            <span style="font-size: 13.5px; font-weight: 700; color: #0284c7;" data-i18n="tab_builtin_rooms">✨ 内置常见功能间</span>
+            <span class="badge" style="background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 500; padding: 3px 6px; border-radius: 4px;" data-i18n="tab_badge_direct">直接选择</span>
+          </div>
+          <!-- 右侧红圈位置：直接输入自定义名称，回车或点确定直接应用 -->
+          <div class="room-custom-direct-box d-flex align-items-center gap-2" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 2px 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: border-color 0.2s;">
+            <span style="font-size: 14px; margin-left: 2px;">✏️</span>
+            <input type="text" id="customRoomNameInput" class="form-control" style="border: none; outline: none; box-shadow: none; padding: 4px 6px; font-size: 13px; font-weight: 600; width: 150px; color: #0f172a;" placeholder="自定义手动输入..." data-i18n-placeholder="custom_input_ph" maxlength="20">
+            <button type="button" class="btn btn-primary btn-sm" onclick="app.confirmCustomRoomName()" style="padding: 3px 10px; font-size: 12px; font-weight: 600; border-radius: 6px; background: #0284c7; border: none; white-space: nowrap;" data-i18n="btn_confirm_change">确定</button>
+          </div>
+        </div>
+
+        <div class="modal-body-custom" style="padding: 16px 20px;">
+          <!-- 常见功能间大网格 -->
+          <div id="roomPickerPanelPreset" class="room-picker-panel">
+            <div class="room-picker-group-title" data-i18n="preset_group_tip" style="margin-bottom: 10px; font-size: 13px; color: #64748b; font-weight: 500;">点击直接应用到当前房间：</div>
+            <div class="preset-rooms-grid" id="presetRoomsGrid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer-custom d-flex justify-content-between align-items-center" style="padding: 14px 24px; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+          <span style="font-size: 12.5px; color: #94a3b8;" data-i18n="modal_room_picker_tip">💡 选择或确认后自动应用地砖与名称并保存</span>
+          <button type="button" class="unit-btn btn-secondary-clean" onclick="app.closeRoomNamePickerModal()" data-i18n="btn_cancel_close">取消关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floor Material Library Modal (地板库弹窗，对标官方材质库) -->
+  <div class="modal-download" id="modalFloorLibrary" style="display: none;">
+    <div class="modal-backdrop-custom" onclick="app.closeFloorLibraryModal()"></div>
+    <div class="custom-modal-dialog" style="width: 360px; max-width: 92vw; margin: auto;">
+      <div class="custom-modal-content" style="background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 45px rgba(0,0,0,0.25);">
+        <div class="modal-header-custom d-flex justify-content-between align-items-center" style="padding: 14px 18px; border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+          <h5 class="modal-title m-0" style="font-size: 16px; font-weight: 700; color: #1e293b;" data-i18n="modal_floor_lib_title">地板库</h5>
+          <button class="modal-close-btn" onclick="app.closeFloorLibraryModal()" style="font-size: 20px;">✕</button>
+        </div>
+        <div class="modal-body-custom" style="padding: 16px 18px; max-height: 440px; overflow-y: auto;">
+          <div class="floor-lib-grid" id="floorLibGrid">
+            <!-- 3-column floor material tiles matching user's uploaded images -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Onboarding Tour Overlay -->
+  <div id="tourOverlay" class="tour-overlay" style="display: none;">
+    <div class="tour-backdrop" onclick="app.skipTour()"></div>
+    <div id="tourSpotlight" class="tour-spotlight">
+      <div class="tour-spotlight-hint" id="tourSpotlightHint">👆 点击此处</div>
+    </div>
+    <div id="tourCard" class="tour-card">
+      <div class="tour-card-header">
+        <span class="tour-step-badge" id="tourStepBadge">步骤 1 / 6</span>
+        <button class="tour-close-btn" onclick="app.skipTour()" title="关闭/跳过引导">✕</button>
+      </div>
+      <div class="tour-title" id="tourTitle">✨ 第一步：新建户型</div>
+      <div class="tour-body" id="tourBody">
+        点击顶部「新建户型」按钮，即可创建全新画板，系统支持多楼层独立管理（1F、2F、-1F等，跳过0层规范），开启全新空间设计。
+      </div>
+      <div class="tour-footer">
+        <div class="tour-dots" id="tourDots">
+          <!-- Dynamically generated dots -->
+        </div>
+        <div class="tour-actions">
+          <button class="btn-tour-skip" onclick="app.skipTour()">跳过演示</button>
+          <button class="btn-tour-prev" id="btnTourPrev" onclick="app.prevTourStep()">上一步</button>
+          <button class="btn-tour-next" id="btnTourNext" onclick="app.nextTourStep()">下一步</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/furniture_data.js?v=20261110_v6"></script>
+  <script src="js/demo_data.js?v=20261110_v6"></script>
+  <script src="js/i18n.js?v=20261110_v6"></script>
+  <script src="js/engine.js?v=20261110_v6"></script>
+  <script src="js/renderer.js?v=20261110_v6"></script>
+  <script src="js/exporter.js?v=20261110_v6"></script>
+  <script src="js/app.js?v=20261110_v6"></script>
+</body>
+</html>

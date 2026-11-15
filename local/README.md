@@ -1,6 +1,6 @@
 # 3DNest FloorPlan Studio - 智能户型图绘制设计工作台
 
-[VPS 示范站点](https://hxt.xiazheteng.fun/) · [YouTube @xiazheteng8](https://www.youtube.com/@xiazheteng8) · [Telegram @xiazheteng8](https://t.me/xiazheteng8)
+[GitHub Pages 示范站点](https://xiazheteng8.github.io/floorplan-studio/) · [VPS 示范站点](https://hxt.xiazheteng.fun/) · [YouTube @xiazheteng8](https://www.youtube.com/@xiazheteng8) · [Telegram @xiazheteng8](https://t.me/xiazheteng8)
 
 第一次部署？先按 [本地 / VPS 新手教程](../README.md) 或 [GitHub / Cloudflare Pages 新手教程](../README-PAGES.md) 操作。下面是本目录的功能和配置参考。
 

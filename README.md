@@ -1,6 +1,6 @@
 # 户型图绘制
 
-[VPS 示范站点](https://hxt.xiazheteng.fun/) · [YouTube @xiazheteng8](https://www.youtube.com/@xiazheteng8) · [Telegram @xiazheteng8](https://t.me/xiazheteng8)
+[GitHub Pages 示范站点](https://xiazheteng8.github.io/floorplan-studio/) · [VPS 示范站点](https://hxt.xiazheteng.fun/) · [YouTube @xiazheteng8](https://www.youtube.com/@xiazheteng8) · [Telegram @xiazheteng8](https://t.me/xiazheteng8)
 
 [跳到 GitHub Pages / Cloudflare Pages 教程](README-PAGES.md)
 

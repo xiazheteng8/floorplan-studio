@@ -1,0 +1,530 @@
+{
+  "title": "晴川雅居 · 两室两厅一厨一卫 · 84㎡示意",
+  "walls": [
+    {
+      "id": "o1",
+      "p1": {
+        "x": 0,
+        "y": 0
+      },
+      "p2": {
+        "x": 10000,
+        "y": 0
+      },
+      "thickness": 220,
+      "type": "bearing"
+    },
+    {
+      "id": "o2",
+      "p1": {
+        "x": 10000,
+        "y": 0
+      },
+      "p2": {
+        "x": 10000,
+        "y": 8400
+      },
+      "thickness": 220,
+      "type": "bearing"
+    },
+    {
+      "id": "o3",
+      "p1": {
+        "x": 10000,
+        "y": 8400
+      },
+      "p2": {
+        "x": 0,
+        "y": 8400
+      },
+      "thickness": 220,
+      "type": "bearing"
+    },
+    {
+      "id": "o4",
+      "p1": {
+        "x": 0,
+        "y": 8400
+      },
+      "p2": {
+        "x": 0,
+        "y": 0
+      },
+      "thickness": 220,
+      "type": "bearing"
+    },
+    {
+      "id": "a",
+      "p1": {
+        "x": 3600,
+        "y": 0
+      },
+      "p2": {
+        "x": 3600,
+        "y": 8400
+      },
+      "thickness": 120,
+      "type": "normal"
+    },
+    {
+      "id": "b",
+      "p1": {
+        "x": 0,
+        "y": 4200
+      },
+      "p2": {
+        "x": 3600,
+        "y": 4200
+      },
+      "thickness": 120,
+      "type": "normal"
+    },
+    {
+      "id": "c",
+      "p1": {
+        "x": 3600,
+        "y": 3000
+      },
+      "p2": {
+        "x": 10000,
+        "y": 3000
+      },
+      "thickness": 120,
+      "type": "normal"
+    },
+    {
+      "id": "d",
+      "p1": {
+        "x": 7000,
+        "y": 0
+      },
+      "p2": {
+        "x": 7000,
+        "y": 3000
+      },
+      "thickness": 120,
+      "type": "normal"
+    },
+    {
+      "id": "e",
+      "p1": {
+        "x": 3600,
+        "y": 7200
+      },
+      "p2": {
+        "x": 10000,
+        "y": 7200
+      },
+      "thickness": 120,
+      "type": "normal"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "r1",
+      "name": "主卧",
+      "type": "bedroom",
+      "area": 15.12,
+      "floorTexture": "wood_wide",
+      "polygon": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 3600,
+          "y": 0
+        },
+        {
+          "x": 3600,
+          "y": 4200
+        },
+        {
+          "x": 0,
+          "y": 4200
+        }
+      ],
+      "center": {
+        "x": 1800,
+        "y": 2100
+      },
+      "_labelWidth": 1314.8779296875,
+      "_labelHeight": 680
+    },
+    {
+      "id": "r2",
+      "name": "次卧",
+      "type": "bedroom",
+      "area": 15.12,
+      "floorTexture": "wood_wide",
+      "polygon": [
+        {
+          "x": 0,
+          "y": 4200
+        },
+        {
+          "x": 3600,
+          "y": 4200
+        },
+        {
+          "x": 3600,
+          "y": 8400
+        },
+        {
+          "x": 0,
+          "y": 8400
+        }
+      ],
+      "center": {
+        "x": 1800,
+        "y": 6300
+      },
+      "_labelWidth": 1314.8779296875,
+      "_labelHeight": 680
+    },
+    {
+      "id": "r3",
+      "name": "厨房",
+      "type": "kitchen",
+      "area": 10.2,
+      "floorTexture": "tile_carrara",
+      "polygon": [
+        {
+          "x": 3600,
+          "y": 0
+        },
+        {
+          "x": 7000,
+          "y": 0
+        },
+        {
+          "x": 7000,
+          "y": 3000
+        },
+        {
+          "x": 3600,
+          "y": 3000
+        }
+      ],
+      "center": {
+        "x": 5300,
+        "y": 1500
+      },
+      "_labelWidth": 1314.8779296875,
+      "_labelHeight": 680
+    },
+    {
+      "id": "r4",
+      "name": "卫生间",
+      "type": "bathroom",
+      "area": 9,
+      "floorTexture": "tile_carrara",
+      "polygon": [
+        {
+          "x": 7000,
+          "y": 0
+        },
+        {
+          "x": 10000,
+          "y": 0
+        },
+        {
+          "x": 10000,
+          "y": 3000
+        },
+        {
+          "x": 7000,
+          "y": 3000
+        }
+      ],
+      "center": {
+        "x": 8500,
+        "y": 1500
+      },
+      "_labelWidth": 1180,
+      "_labelHeight": 680
+    },
+    {
+      "id": "r5",
+      "name": "客餐厅",
+      "type": "living",
+      "area": 26.88,
+      "floorTexture": "tile_carrara",
+      "polygon": [
+        {
+          "x": 3600,
+          "y": 3000
+        },
+        {
+          "x": 10000,
+          "y": 3000
+        },
+        {
+          "x": 10000,
+          "y": 7200
+        },
+        {
+          "x": 3600,
+          "y": 7200
+        }
+      ],
+      "center": {
+        "x": 6800,
+        "y": 5100
+      },
+      "_labelWidth": 1314.8779296875,
+      "_labelHeight": 680
+    },
+    {
+      "id": "r6",
+      "name": "阳台",
+      "type": "balcony",
+      "area": 7.68,
+      "floorTexture": "tile_carrara",
+      "polygon": [
+        {
+          "x": 3600,
+          "y": 7200
+        },
+        {
+          "x": 10000,
+          "y": 7200
+        },
+        {
+          "x": 10000,
+          "y": 8400
+        },
+        {
+          "x": 3600,
+          "y": 8400
+        }
+      ],
+      "center": {
+        "x": 6800,
+        "y": 7800
+      },
+      "_labelWidth": 1540,
+      "_labelHeight": 680
+    }
+  ],
+  "doors": [
+    {
+      "id": "en",
+      "wallId": "o2",
+      "t": 0.58,
+      "width": 1000,
+      "type": "entry_door"
+    },
+    {
+      "id": "da",
+      "wallId": "a",
+      "t": 0.32,
+      "width": 850,
+      "type": "single_door"
+    },
+    {
+      "id": "db",
+      "wallId": "a",
+      "t": 0.67,
+      "width": 850,
+      "type": "single_door"
+    },
+    {
+      "id": "dc",
+      "wallId": "c",
+      "t": 0.24,
+      "width": 1400,
+      "type": "sliding_door"
+    },
+    {
+      "id": "dd",
+      "wallId": "c",
+      "t": 0.76,
+      "width": 800,
+      "type": "single_door"
+    },
+    {
+      "id": "de",
+      "wallId": "e",
+      "t": 0.5,
+      "width": 2200,
+      "type": "sliding_door"
+    }
+  ],
+  "windows": [
+    {
+      "id": "wn1",
+      "wallId": "o1",
+      "t": 0.18,
+      "width": 1800,
+      "type": "window"
+    },
+    {
+      "id": "wn2",
+      "wallId": "o4",
+      "t": 0.25,
+      "width": 1800,
+      "type": "window"
+    },
+    {
+      "id": "wn3",
+      "wallId": "o1",
+      "t": 0.54,
+      "width": 1500,
+      "type": "window"
+    },
+    {
+      "id": "wn4",
+      "wallId": "o3",
+      "t": 0.31,
+      "width": 4800,
+      "type": "french_window"
+    }
+  ],
+  "furniture": [
+    {
+      "id": "f1",
+      "type": "bed_double",
+      "x": 1800,
+      "y": 1750,
+      "width": 1800,
+      "height": 2100,
+      "rotation": 0
+    },
+    {
+      "id": "f2",
+      "type": "wardrobe",
+      "x": 1700,
+      "y": 3800,
+      "width": 2500,
+      "height": 500,
+      "rotation": 0
+    },
+    {
+      "id": "f3",
+      "type": "bed_single",
+      "x": 1200,
+      "y": 6000,
+      "width": 1200,
+      "height": 2000,
+      "rotation": 0
+    },
+    {
+      "id": "f4",
+      "type": "study_desk",
+      "x": 2800,
+      "y": 7500,
+      "width": 1200,
+      "height": 650,
+      "rotation": 0
+    },
+    {
+      "id": "f5",
+      "type": "sofa_3p",
+      "x": 5350,
+      "y": 3800,
+      "width": 2400,
+      "height": 850,
+      "rotation": 0
+    },
+    {
+      "id": "f6",
+      "type": "coffee_table",
+      "x": 5350,
+      "y": 5000,
+      "width": 1100,
+      "height": 600,
+      "rotation": 0
+    },
+    {
+      "id": "f7",
+      "type": "tv_cabinet",
+      "x": 5350,
+      "y": 6750,
+      "width": 2200,
+      "height": 400,
+      "rotation": 0
+    },
+    {
+      "id": "f8",
+      "type": "dining_table_6",
+      "x": 8100,
+      "y": 5700,
+      "width": 1700,
+      "height": 1400,
+      "rotation": 0
+    },
+    {
+      "id": "f9",
+      "type": "kitchen_sink",
+      "x": 5400,
+      "y": 450,
+      "width": 1100,
+      "height": 550,
+      "rotation": 0
+    },
+    {
+      "id": "f10",
+      "type": "gas_stove",
+      "x": 4000,
+      "y": 1500,
+      "width": 900,
+      "height": 550,
+      "rotation": 90
+    },
+    {
+      "id": "f11",
+      "type": "fridge_double",
+      "x": 6550,
+      "y": 650,
+      "width": 700,
+      "height": 700,
+      "rotation": 0
+    },
+    {
+      "id": "f12",
+      "type": "shower_room",
+      "x": 9250,
+      "y": 650,
+      "width": 1100,
+      "height": 1100,
+      "rotation": 0
+    },
+    {
+      "id": "f13",
+      "type": "toilet",
+      "x": 7600,
+      "y": 650,
+      "width": 500,
+      "height": 750,
+      "rotation": 0
+    },
+    {
+      "id": "f14",
+      "type": "vanity_sink",
+      "x": 8500,
+      "y": 2500,
+      "width": 1200,
+      "height": 500,
+      "rotation": 0
+    },
+    {
+      "id": "f15",
+      "type": "washing_machine",
+      "x": 9450,
+      "y": 7850,
+      "width": 650,
+      "height": 650,
+      "rotation": 0
+    },
+    {
+      "id": "f16",
+      "type": "plant_large",
+      "x": 4000,
+      "y": 7900,
+      "width": 500,
+      "height": 500,
+      "rotation": 0
+    }
+  ]
+}

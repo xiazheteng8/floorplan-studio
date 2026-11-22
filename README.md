@@ -20,6 +20,18 @@
 
 **纯静态运行，无需数据库、账号系统或第三方 API 密钥。** 图纸精度取决于输入尺寸和校准结果，实际施工请以专业测绘与审核图纸为准。
 
+## 🏡 标准户型 · 重绘演示
+
+重新绘制两室两厅一厨一卫示意户型：墙体结构 → 房间与门窗 → 家具布置。面积为 84㎡几何示意，不是施工图。
+
+![🏡 标准户型 · 重绘演示](docs/media/demo.gif)
+
+[▶ 播放 / 下载 MP4（0.09 MB）](https://github.com/xiazheteng8/floorplan-studio/raw/refs/heads/main/docs/media/demo.mp4)
+
+> 上方为轻量循环预览；MP4 可查看完整演示。演示无音轨，避免自动播放声音。
+
+[📐 下载本次重绘的户型结构 JSON](docs/media/standard-floorplan.json)（数据留存，当前界面未提供通用 JSON 导入入口）。
+
 ## ✨ 从绘制到交付
 
 | 能力 | 功能说明 |
